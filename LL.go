@@ -68,22 +68,42 @@ func (list *LinkedList) find(data, count int) (output []*Node) {
 			if current.data == data {
 				output = append(output, current)
 				if len(output) == count {
-					return output
+					return
 				}
 			}
 		}
-		return output
+		return
 	}
 }
 
 func (list *LinkedList) remove(data, count int) (countDone int) {
 	nodes := list.find(data, count)
+	// list.len : 0, 1, 2, 3+
+	// 0: nodes is an empty array
+	// 1:
 	for i := range nodes {
-		nodes[i].prev.next = nodes[i].next
-		nodes[i].next.prev = nodes[i].prev
+		if nodes[i] == list.first && nodes[i] == list.last {
+			// here list.len == 1
+			list.first = nil
+			list.last = nil
+			list.len = 0
+			countDone++
+			return
+		} else if nodes[i] == list.first {
+			// here list.len == 2
+			list.first = list.first.next
+			list.first.prev = nil
+		} else if nodes[i] == list.last {
+			// here list.len == 2
+			list.last = list.last.prev
+			list.last.next = nil
+		} else {
+			// here list.len >= 3
+			nodes[i].prev.next = nodes[i].next
+			nodes[i].next.prev = nodes[i].prev
+		}
+		list.len--
 		countDone++
-
 	}
-	list.len -= countDone
 	return
 }
