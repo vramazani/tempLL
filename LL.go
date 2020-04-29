@@ -47,8 +47,46 @@ func (list *LinkedList) pop() (ret int, e error) {
 	return
 }
 
+func (list *LinkedList) put(node *Node, index int) (int, error) {
+	// (push_before) def: put node into list so that its position becomes index
+	if index < 0 || list.len < index {
+		return -1, errors.New("illegal index")
+	}
+
+	// by list.len 0, 1, 2, 3+
+	// 0: case 0 if
+	// 1: case 0 else /
+	switch index {
+	case 0: // becomes first
+		if list.len == 0 {
+			list.append(node)
+		} else {
+			node.next = list.first
+			node.next.prev = node
+			list.first = node
+		}
+	// case 1:
+	// case list.len - 1:
+	case list.len: // becomes last
+		list.append(node)
+	default: // becomes an inner
+		toBeNext := list.first
+		for i := 0; i < list.len; i++ {
+			if i == index {
+				break
+			}
+			toBeNext = toBeNext.next
+		}
+		node.next = toBeNext
+		node.prev = toBeNext.prev
+		node.prev.next = node
+		node.next.prev = node
+	}
+	return list.len, nil
+}
+
 func (list *LinkedList) find(data, count int) (output []*Node) {
-	// def: finds [first] up to count occurances of data in list
+	// def: forward finds up to count occurances of data in list
 	if 0 == list.len || 0 == count {
 		return
 	} else {
@@ -66,7 +104,7 @@ func (list *LinkedList) find(data, count int) (output []*Node) {
 }
 
 func (list *LinkedList) remove(data, count int) (countDone int) {
-	// def: removes [first] up to count occurances of data in list
+	// def: forward removes up to count occurances of data in list
 	nodes := list.find(data, count)
 
 	// list.len in the for : 0, 1, 2, 3+
@@ -86,6 +124,7 @@ func (list *LinkedList) remove(data, count int) (countDone int) {
 			list.first.prev = nil
 		} else if nodes[i] == list.last {
 			// here list.len >= 2
+			// same effect as list.pop()
 			list.last = list.last.prev
 			list.last.next = nil
 		} else { // inner
