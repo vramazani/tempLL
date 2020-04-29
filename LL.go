@@ -80,10 +80,6 @@ func (list *LinkedList) remove(data, count int) (countDone int) {
 			// hence must be the last iteration
 			list.first = nil
 			list.last = nil
-			list.len = 0
-			countDone++
-			// here should countDone == len(nodes) == i+1
-			return
 		} else if nodes[i] == list.first {
 			// here list.len >= 2
 			list.first = list.first.next
@@ -100,5 +96,6 @@ func (list *LinkedList) remove(data, count int) (countDone int) {
 		list.len--
 		countDone++
 	}
+	// here countDone == len(nodes)
 	return
 }
